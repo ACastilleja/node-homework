@@ -23,7 +23,7 @@ describe('Week 1 Assignment — Advanced Tests (Optional)', () => {
     if (fs.existsSync(largeFile)) fs.unlinkSync(largeFile);
 
     // Run your script and capture what it prints.
-    const output = execSync(`node ${path.join(assignmentDir, 'core-modules-demo.js')}`).toString();
+    const output = execSync(`node "${path.join(assignmentDir, 'core-modules-demo.js')}"`).toString();
 
     // Reading with a stream happens in pieces ("chunks"), so you should print
     // at least one chunk and then a message when the stream finishes.

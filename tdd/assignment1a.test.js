@@ -29,7 +29,7 @@ describe('Week 1 Assignment — Core Tests', () => {
   test('globals-demo.js outputs correct globals', () => {
     const scriptPath = path.join(assignmentDir, 'globals-demo.js');
     // Run your script and capture everything it prints.
-    const output = execSync(`node ${scriptPath}`).toString();
+    const output = execSync(`node "${scriptPath}"`).toString();
     // Your output should include each of these lines.
     expect(output).toContain(`__dirname: ${assignmentDir}`);
     expect(output).toContain(`__filename: ${scriptPath}`);
@@ -44,7 +44,7 @@ describe('Week 1 Assignment — Core Tests', () => {
     if (fs.existsSync(sampleTxt)) fs.unlinkSync(sampleTxt);
 
     // Run your script and capture what it prints.
-    const output = execSync(`node ${path.join(assignmentDir, 'async-demo.js')}`).toString();
+    const output = execSync(`node "${path.join(assignmentDir, 'async-demo.js')}"`).toString();
 
     // Your script should have written sample.txt with this exact text.
     expect(fs.existsSync(sampleTxt)).toBe(true);
@@ -67,7 +67,7 @@ describe('Week 1 Assignment — Core Tests', () => {
     if (fs.existsSync(demoTxt)) fs.unlinkSync(demoTxt);
 
     // Run your script and capture what it prints.
-    const output = execSync(`node ${path.join(assignmentDir, 'core-modules-demo.js')}`).toString();
+    const output = execSync(`node "${path.join(assignmentDir, 'core-modules-demo.js')}"`).toString();
 
     // Output from the `os` module.
     expect(output).toMatch(/Platform:/);
