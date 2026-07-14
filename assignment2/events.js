@@ -7,7 +7,7 @@ emitter.on("time", (message) => {
 
 module.exports = emitter;
 
-if (require.main == module) {
+if (require.main === module) {
     setInterval(() => {
         const currentTime = new Date().toString();
         emitter.emit("time", currentTime);
