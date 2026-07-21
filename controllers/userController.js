@@ -6,10 +6,7 @@ const register = (req, res) => {
     if (!name || !email || !password) {
         return res.status(400).json({error: "Name, email, and password are required"});
     }
-    const existingUser = global.users.find((u) => u.email === email);
-    if (existingUser) {
-        return res.status(400).json({ error: "User already exists with this email"});
-    }
+
     const newUser = {id: Date.now(), name, email, password };
     global.users.push(newUser);
     global.user_id = newUser.id;
@@ -24,6 +21,10 @@ const register = (req, res) => {
 
 const logon = (req, res) => {
     const { email, password } = req.body || {};
+
+    if (!email || !password) {
+        return res.status(400).json({error: "Email and password are required"})
+    }
 
     const user = global.users.find((u) => u.email === email && u.password === password);
 
