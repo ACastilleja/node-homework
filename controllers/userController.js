@@ -5,6 +5,7 @@ const register = (req, res) => {
     
     const newUser = {name, email, password };
 
+    global.users = global.users || [];
     global.users.push(newUser);
 
     global.user_id = newUser;
@@ -17,7 +18,8 @@ const register = (req, res) => {
 const logon = (req, res) => {
     const { email, password } = req.body;
 
-    const user = global.users.find(u => u.email === email && u.password === password);
+    const users = global.users || [];
+    const user = users.find(u => u.email === email && u.password === password);
 
     if (user) {
         global.user_id = user;
@@ -32,7 +34,7 @@ const logon = (req, res) => {
 
 const logoff = (req, res) => {
     global.user_id = null;
-    res.status(200).end();
+    res.status(200).json({ message: "Logged off successfully" });
 };
 
 module.exports = {
