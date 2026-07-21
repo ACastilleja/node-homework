@@ -7,12 +7,31 @@ const app = express();
 
 // Assignment 3b and 3c ask you to add middleware in this file.
 
-app.use(express.json());
+app.use(express.json({ limit: "1mb"}));
+
 app.use(express.static(path.join(__dirname, "public")));
+
 
 app.use((req, res, next) => {
   req.requestId = randomUUID();
   res.setHeader("X-Request-Id", req.requestId);
+  next();
+});
+
+app.use((req, res, next) => {
+  if (req.method === "POST" && !req.is("application/json")) {
+    return res.status(400).json({
+      error: "Content-Type must be application/json",
+      requestId: req.requestId
+    });
+  }
+  next();
+});
+
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
   next();
 });
 
@@ -33,9 +52,17 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
-  res.satus(statusCode).json({
-    error: err.message || "Inernal Server Error",
-    requestId: req.requestId
+  const message = err.message || "Internal Server Error";
+
+  if (statusCode >= 400 && statusCode < 500) {
+    console.warn(`WARN: ${err.name || "Error"} - ${message}`);
+  }else {
+    console.error(`ERROR: ${err.name || "Error"} - ${message}`);
+  }
+
+  res.status(statusCode).json({
+    error: message,
+    requestId: req.requestId,
   });
 });
 
