@@ -9,16 +9,16 @@ router.get("/dogs", (req, res) => {
 });
 
 router.post("/adopt", (req, res, next) => {
-  const { name, address, email, adopterName, dogName } = req.body || {};
-  const applicantName = adopterName || name;
+  const { name, address, email, dogName } = req.body || {};
+  
 
-  if (!dogName || !applicantName) {
+  if (!name || !email || !dogName) {
     return next(new ValidationError("Missing required fields"));
   }
 
   const dogExists = dogs.some((dog) => {
-    const dogNameInDb = typeof dog === "string" ? dog : dog?.name;
-    return dogNameInDb && dogNameInDb.toLowerCase() === dogName.toLowerCase();
+    const dName = typeof dog === "string" ? dog : dog?.name;
+    return dName && dName.toLowerCase() === dogName.toLowerCase();
   });
 
   if (!dogExists) {
@@ -26,9 +26,9 @@ router.post("/adopt", (req, res, next) => {
   }
 
   res.status(201).json({
-    message: `Adoption request received. We will contact you at ${email || "your email"} for further details.`,
+    message: `Adoption request received. We will contact you at ${email} for further details.`,
     application: {
-      name: applicantName,
+      name,
       address,
       email,
       dogName,

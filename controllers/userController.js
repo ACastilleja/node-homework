@@ -1,40 +1,49 @@
 
 // Register
 const register = (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body || {};
     
-    const newUser = {name, email, password };
-
-    global.users = global.users || [];
+    if (!name || !email || !password) {
+        return res.status(400).json({error: "Name, email, and password are required"});
+    }
+    const existingUser = global.users.find((u) => u.email === email);
+    if (existingUser) {
+        return res.status(400).json({ error: "User already exists with this email"});
+    }
+    const newUser = {id: Date.now(), name, email, password };
     global.users.push(newUser);
+    global.user_id = newUser.id;
 
-    global.user_id = newUser;
-    
-    res.status(201).json({ name, email });
+    return res.status(201).json({
+        name: newUser.name,
+        email: newUser.email,
+    });
 };
 
 // Logon
 
 const logon = (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
-    const users = global.users || [];
-    const user = users.find(u => u.email === email && u.password === password);
+    const user = global.users.find((u) => u.email === email && u.password === password);
 
-    if (user) {
-        global.user_id = user;
-        return res.status(200).json({ name: user.name, email: user.email});
+    if (!user) {
+        return res.status(401).json({ error: "Invalid credentials"});
     };
 
-    return res.status(401).json({ message: "Invalid email or password"});
+    global.user_id = user.id;
 
+    return res.status(200).json({
+        name: user.name,
+        email: user.email,
+    });
 };
 
 // Logoff
 
 const logoff = (req, res) => {
     global.user_id = null;
-    res.status(200).json({ message: "Logged off successfully" });
+    return res.sendStatus(200);
 };
 
 module.exports = {
