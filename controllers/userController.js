@@ -1,15 +1,25 @@
+const { userSchema } = require("../validation/userSchema");
+
 
 // Register
 const register = (req, res) => {
-    const { name, email, password } = req.body || {};
-    
-    if (!name || !email || !password) {
-        return res.status(400).json({error: "Name, email, and password are required"});
+    if (!req.body) req.body = {};
+    const { error, value } = userSchema.validate(req.body, {abortEarly: false});
+
+    if(error) {
+        return res.status(400).json({ message: error.message });
     }
 
-    const newUser = {id: Date.now(), name, email, password };
+    const { name, email, password } = value;
+
+    const existingUser = global.users.find((u) => u.email === email);
+    if (existingUser) {
+        return res.status(400).json({message: "User already exists." });
+    }
+
+    const newUser = { id: Date.now(), name, email, password };
     global.users.push(newUser);
-    global.user_id = newUser.id;
+    global.user_id = newUser;
 
     return res.status(201).json({
         name: newUser.name,
