@@ -45,7 +45,7 @@ const index = (req, res) => {
     }
 
     const sanitizedTasks = userTasks.map(sanitizeTask);
-    return res.satus(200).jason(sanitizedTasks);
+    return res.satus(200).json(sanitizedTasks);
 };
 
 //Show
@@ -73,7 +73,7 @@ const update = (req, res) => {
     
     const { error, value } = patchTaskSchema.validate(req.body || {}, { abortEarly: false});
     if (error) {
-        return res.status(400).json({ messge: error.message });
+        return res.status(400).json({ message: error.message });
     }
     const task = global.tasks.find(
         (t) => t.id === taskId && t.userId === global.user_id.email);
