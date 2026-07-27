@@ -65,7 +65,7 @@ const logon = async (req, res) => {
 
     const goodCredentials = await comparePassword(password, user.hashedPassword);
     if (!goodCredentials) {
-        return res.status(401).json({ error: "Invalid credetials"});
+        return res.status(401).json({ error: "Invalid credentials"});
     }
 
     global.user_id = user;
