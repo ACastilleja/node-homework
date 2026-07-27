@@ -49,13 +49,15 @@ const register = async (req, res) => {
 // Logon
 
 const logon = async (req, res) => {
-    const { email, password } = req.body || {};
+    let { email, password } = req.body || {};
 
     if (!email || !password) {
         return res.status(400).json({error: "Email and password are required"})
     }
 
-    const user = global.users.find((u) => u.email === email && u.password);
+    email = email.trim().toLowerCase();
+
+    const user = global.users.find((u) => u.email === email);
 
     if (!user) {
         return res.status(401).json({ error: "Invalid credentials"});

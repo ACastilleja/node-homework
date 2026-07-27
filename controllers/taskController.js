@@ -45,7 +45,7 @@ const index = (req, res) => {
     }
 
     const sanitizedTasks = userTasks.map(sanitizeTask);
-    return res.satus(200).json(sanitizedTasks);
+    return res.status(200).json(sanitizedTasks);
 };
 
 //Show
