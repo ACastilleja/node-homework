@@ -17,7 +17,7 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use(notFound);
 app.use(errorHandler);
-app.use("/api/task", authMiddleware, taskRouter);
+app.use("/api/tasks", authMiddleware, taskRouter);
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
