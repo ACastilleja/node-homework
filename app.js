@@ -15,9 +15,9 @@ global.tasks = global.tasks || [];
 app.use(express.json());
 
 app.use("/api/users", userRoutes);
+app.use("/api/tasks", authMiddleware, taskRouter);
 app.use(notFound);
 app.use(errorHandler);
-app.use("/api/tasks", authMiddleware, taskRouter);
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
