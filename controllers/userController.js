@@ -1,15 +1,44 @@
+const { userSchema } = require("../validation/userSchema");
+const crypto = require("crypto");
+const util = require("util");
+const scrypt = util.promisify(crypto.scrypt);
+
+//Helper functions
+async function hashPassword(password) {
+    const salt = crypto.randomBytes(16).toString("hex");
+    const derivedKey = await scrypt(password, salt, 64);
+    return `${salt}:${derivedKey.toString("hex")}`;
+}
+
+async function comparePassword(inputPassword, storedHash){
+    const [salt, key] = storedHash.split(":");
+    const keyBuffer = Buffer.from(key, "hex");
+    const derivedKey = await scrypt(inputPassword, salt, 64);
+    return crypto.timingSafeEqual(keyBuffer, derivedKey);
+}
+
 
 // Register
-const register = (req, res) => {
-    const { name, email, password } = req.body || {};
-    
-    if (!name || !email || !password) {
-        return res.status(400).json({error: "Name, email, and password are required"});
+const register = async (req, res) => {
+    if (!req.body) req.body = {};
+    const { error, value } = userSchema.validate(req.body, {abortEarly: false});
+
+    if(error) {
+        return res.status(400).json({ message: error.message });
     }
 
-    const newUser = {id: Date.now(), name, email, password };
+    const { name, email, password } = value;
+
+    const existingUser = global.users.find((u) => u.email === email);
+    if (existingUser) {
+        return res.status(400).json({message: "User already exists." });
+    }
+
+    const hashedPassword = await hashPassword(password);
+
+    const newUser = { id: Date.now(), name, email, hashedPassword };
     global.users.push(newUser);
-    global.user_id = newUser.id;
+    global.user_id = newUser;
 
     return res.status(201).json({
         name: newUser.name,
@@ -19,20 +48,27 @@ const register = (req, res) => {
 
 // Logon
 
-const logon = (req, res) => {
-    const { email, password } = req.body || {};
+const logon = async (req, res) => {
+    let { email, password } = req.body || {};
 
     if (!email || !password) {
         return res.status(400).json({error: "Email and password are required"})
     }
 
-    const user = global.users.find((u) => u.email === email && u.password === password);
+    email = email.trim().toLowerCase();
+
+    const user = global.users.find((u) => u.email === email);
 
     if (!user) {
         return res.status(401).json({ error: "Invalid credentials"});
     };
 
-    global.user_id = user.id;
+    const goodCredentials = await comparePassword(password, user.hashedPassword);
+    if (!goodCredentials) {
+        return res.status(401).json({ error: "Invalid credentials"});
+    }
+
+    global.user_id = user;
 
     return res.status(200).json({
         name: user.name,
