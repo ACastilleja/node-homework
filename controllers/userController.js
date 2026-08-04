@@ -20,27 +20,33 @@ async function comparePassword(inputPassword, storedHash){
 
 
 // Register
-const register = async (req, res) => {
+const register = async (req, res, next) => {
     if (!req.body) req.body = {};
     const { error, value } = userSchema.validate(req.body, {abortEarly: false});
 
     if(error) {
-        return res.status(400).json({ message: error.message });
+        return res.status(400).json({ message: "Validation failed", details: error.details, });
     }
 
-    const { name, email, password } = value;
+    let user = null;
+    value.hashed_password = await hashPassword(value.password);
 
-    const existingUser = global.users.find((u) => u.email === email);
-    if (existingUser) {
-        return res.status(400).json({message: "User already exists." });
+    try {
+        user = await pool.query(
+            `INSERT INTO users (email, name, hashed_password) VALUES ($1, $2, $3) RETURNING id, email, name`,
+            [value.email, value.name, value.hashed_password]
+        );
+    }catch (e) {
+        if (e.code === "23505") {
+            return res.status(400).json({message: "User already exists."});
+        }
+        return next(e);
     }
 
-    const hashedPassword = await hashPassword(password);
+    const newUser = user.rows[0];
 
-    const newUser = { id: Date.now(), name, email, hashedPassword };
-    global.users.push(newUser);
-    global.user_id = newUser;
-
+    global.user_id = newUser.id;
+    
     return res.status(201).json({
         name: newUser.name,
         email: newUser.email,
