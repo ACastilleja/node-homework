@@ -64,7 +64,7 @@ const update = async (req, res) => {
     const userParm = `$${keys.length + 2}`;
 
     const updatedTask = await pool.query(
-        `UPDATE tasks SET ${setClauses} WHERE id = ${idParm} AND user_id = ${userParm} RETURNING id, title, is_completed AS "isCompleted"`, [...Object.values(value), taskId, global.user_id]
+        `UPDATE tasks SET ${setClauses} WHERE id = ${idParm} AND user_id = ${userParm} RETURNING id, title, is_completed`, [...Object.values(value), taskId, global.user_id]
     );
 
     if (updatedTask.rows.length === 0) {

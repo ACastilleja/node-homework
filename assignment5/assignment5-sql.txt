@@ -7,7 +7,6 @@ SELECT c.customer_name, AVG(t.total_price) AS average_order_price FROM customers
 
 #Task 3 Create a new order for customer Perez and Sons.
 #step1 
-
 SELECT customer_id FROM customers WHERE customer_name = 'Perez and Sons';
 #step2 
 SELECT employee_id FROM employees WHERE first_name = 'Miranda' AND last_name = 'Harris';
