@@ -59,7 +59,7 @@ const logon = async (req, res, next) => {
     let { email, password } = req.body || {};
 
     if (!email || !password) {
-        return res.status(401).json({ message: "Invalid credentials"});
+        return res.status(401).json({ error: "Invalid credentials"});
     }
 
     email = email.trim().toLowerCase();
