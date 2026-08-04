@@ -9,12 +9,13 @@ const create = async (req, res) => {
         return res.status(400).json({message: error.message });
     }
 
+    const isCompleted = value.isCompleted ?? value.is_completed ?? false;
 
     const task = await pool.query(
         `INSERT INTO tasks (title, is_completed, user_id) VALUES ($1, $2, $3) RETURNING id, title, is_completed`, 
-        [value.title, value.isCompleted ?? false, global.user_id]
+        [value.title, isCompleted, global.user_id]
     );
-    return res.status(201).json(task.row[0]);
+    return res.status(201).json(task.rows[0]);
 };
 
 //Index
@@ -79,7 +80,7 @@ const deleteTask = async (req, res) => {
     const deletedTask = await pool.query(
         `DELETE FROM tasks WHERE id = $1 AND user_id = $2 RETURNING id, title, is_completed`, [taskId, global.user_id]
     );
-    if (deleteTask.rows.length === 0) {
+    if (!deletedTask || !deletedTask.rows || deletedTask.rows.length === 0) {
         return res.status(404).json({ message: "Task not found."});
     }
     return res.status(200).json(deletedTask.rows[0]);

@@ -46,7 +46,7 @@ const register = async (req, res, next) => {
     const newUser = user.rows[0];
 
     global.user_id = newUser.id;
-    
+
     return res.status(201).json({
         name: newUser.name,
         email: newUser.email,
@@ -69,7 +69,7 @@ const logon = async (req, res, next) => {
         const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
 
         if (result.rows.length === 0) {
-            return res.status(401)json({error: "Invalid credentials"});
+            return res.status(401).json({error: "Invalid credentials"});
         }
 
         const user = result.rows[0];
