@@ -20,4 +20,4 @@ COMMIT;
 SELECT * FROM line_items WHERE order_id = 253;
 
 #Tast 4 Find Employees with more than 5 orders.
-SELECT e.first_name, e.last_name, COUNT(o.order_id) AS order_count FROM employees e JOIN orders o ON e.employee_id = o.employee_id GROUP BY e.employee_id, e.first_name, e.last_name HAVING COUNT(o.order_id) > 5 ORDER BY e.last_name ASC;
+SELECT e.first_name, e.last_name, COUNT(o.order_id) AS order_count FROM employees e JOIN orders o ON e.employee_id = o.employee_id GROUP BY e.employee_id, e.first_name, e.last_name HAVING COUNT(order_id) > 5 ORDER BY e.last_name ASC;
