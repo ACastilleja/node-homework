@@ -24,7 +24,7 @@ const tasks = await pool.query(
     `SELECT id, title, is_completed FROM tasks WHERE user_id = $1`, [global.user_id]
 );
 if (tasks.rows.length === 0){
-    return res.status(404).json({ message: "No tasks found for this user."});
+    return res.status(404).json({ message: "Task not found."});
 }
 return res.status(200).json(tasks.rows);
 };
@@ -54,20 +54,23 @@ const update = async (req, res) => {
     if (error) {
         return res.status(400).json({ message: error.message})
     }
-    const existingTask = await pool.query(
-        "SELECT * FROM tasks WHERE id = $1 AND user_id = $2", [taskId, global.user_id]
+    let keys = Object.keys(value);
+    if (keys.length === 0) {
+        return res.status(400).json({ message: "No fields provided to update."});
+    }
+    keys = keys.map((key) => (key === "isCompleted" ? "is_completed" : key));
+    const setClauses = keys.map((key, i) => `${key} = $${i + 1}`).join(", ");
+    const idParm = `$${keys.length + 1}`;
+    const userParm = `$${keys.length + 2}`;
+
+    const updatedTask = await pool.query(
+        `UPDATE tasks SET ${setClauses} WHERE id = ${idParm} AND user_id = ${userParm} RETURNING id, title, is_completed AS "isCompleted"`, [...Object.values(value), taskId, global.user_id]
     );
-    if (existingTask.rows.length === 0) {
+
+    if (updatedTask.rows.length === 0) {
         return res.status(404).json({ message: "Task not found."});
     }
 
-    const current = existingTask.rows[0];
-    const updatedTitle = value.title !== undefined ? value.title : current.title;
-    const updatedIsCompleted = value.isCompleted !== undefined ? value.isCompleted : current.is_completed;
-
-    const updatedTask = await pool.query(
-        `UPDATE tasks SET title = $1, is_completed = $2 WHERE id = $3 AND user_id = $4 RETURNING id, title, is_completed`, [updatedTitle, updatedIsCompleted, taskId, global.user_id]
-    );
     return res.status(200).json(updatedTask.rows[0]);
 };
 
