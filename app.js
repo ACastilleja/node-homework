@@ -1,5 +1,5 @@
 const express = require("express");
-const pool = require("./db/pg-pool");
+
 const userRoutes = require("./routes/userRoutes");
 const notFound = require("./middleware/not-found");
 const errorHandler = require("./middleware/error-handler");
@@ -35,10 +35,15 @@ const server = app.listen(port, () => {
     console.log(`Server is listening on port ${port}...`);
 });
 
+let isShuttingDown = false;
+
 const shutdown = async () => {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+    
     console.log("Shutting down server...");
     server.close(async () => {
-        await pool.end();
+        
         await prisma.$disconnect();
         console.log("Prisma disconnected");
         console.log("Server and database pool closed.");

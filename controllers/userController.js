@@ -1,4 +1,4 @@
-const pool = require("../db/pg-pool");
+const prisma = require("../db/prisma");
 const { userSchema } = require("../validation/userSchema");
 const crypto = require("crypto");
 const util = require("util");
@@ -28,28 +28,37 @@ const register = async (req, res, next) => {
         return res.status(400).json({ message: "Validation failed", details: error.details, });
     }
 
-    let user = null;
-    value.hashed_password = await hashPassword(value.password);
+    const hashedPassword = await hashPassword(value.password);
+    delete value.password;
 
-    try {
-        user = await pool.query(
-            `INSERT INTO users (email, name, hashed_password) VALUES ($1, $2, $3) RETURNING id, email, name`,
-            [value.email, value.name, value.hashed_password]
-        );
-    }catch (e) {
-        if (e.code === "23505") {
-            return res.status(400).json({message: "User already exists."});
+    let user = null;
+    
+
+    try{
+        user = await prisma.user.create({
+            data: {
+                name: value.name,
+                email: value.email,
+                hashedPassword: hashedPassword,
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+            },
+        });
+    }catch (err) {
+        if (err.name === "PrismaClientKnownRequestError" && err.code === "P2002") {
+            return res.status(400).json({ message: "User already exists."});
         }
-        return next(e);
+        return next(err);
     }
 
-    const newUser = user.rows[0];
-
-    global.user_id = newUser.id;
+    global.user_id = user.id;
 
     return res.status(201).json({
-        name: newUser.name,
-        email: newUser.email,
+        name: user.name,
+        email: user.email,
     });
 };
 
@@ -66,15 +75,15 @@ const logon = async (req, res, next) => {
 
     try {
 
-        const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+        const user = await prisma.user.findUnique({
+            where: { email },
+        });
 
-        if (result.rows.length === 0) {
-            return res.status(401).json({error: "Invalid credentials"});
+        if (!user) {
+            return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        const user = result.rows[0];
-
-        const goodCredentials = await comparePassword(password, user.hashed_password);
+        const goodCredentials = await comparePassword(password, user.hashedPassword);
         if (!goodCredentials) {
             return res.status(401).json({ error: "Invalid credentials"});
         }
