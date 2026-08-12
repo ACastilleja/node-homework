@@ -60,7 +60,7 @@ const show = async (req, res, next) => {
         return res.status(400).json({ message: "The task ID passed is not valid."});
     }
     try{
-        const task = await prisma.task.findUniqueOrThrow({
+        const task = await prisma.task.findUnique({
             where: {
                 
                     id: taskId,
