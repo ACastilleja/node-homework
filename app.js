@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.get("/health", async (req, res) => {
     try {
-        await prisma.$queryRaw`Select 1`;
+        await prisma.$queryRaw`SELECT 1`;
         res.json({ status: "ok", db: "connected"});
     }catch (err) {
         res.status(500).json({ status: 'error', db: 'not connected' , error: err.message });
@@ -40,13 +40,13 @@ let isShuttingDown = false;
 const shutdown = async () => {
     if (isShuttingDown) return;
     isShuttingDown = true;
-    
+
     console.log("Shutting down server...");
     server.close(async () => {
         
         await prisma.$disconnect();
         console.log("Prisma disconnected");
-        console.log("Server and database pool closed.");
+        console.log("Server closed.");
         process.exit(0);
     });
 };
