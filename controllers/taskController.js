@@ -16,12 +16,14 @@ const create = async (req, res, next) => {
             data: {
                 title: value.title,
                 isCompleted: isCompleted,
+                priority: value.priority,
                 userId: global.user_id,
             },
             select: {
                 id: true,
                 title: true,
                 isCompleted: true,
+                priority: true,
             },
         });
         return res.status(201).json(task);
@@ -41,6 +43,14 @@ try {
             id: true,
             title: true,
             isCompleted: true,
+            priority: true,
+            createdAt: true,
+            User: {
+                select: {
+                    name: true,
+                    email: true,
+                },
+            },
         },
     });
 

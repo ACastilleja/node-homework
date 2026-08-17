@@ -62,6 +62,47 @@ const register = async (req, res, next) => {
     });
 };
 
+//Show
+
+const show = async (req, res, next) => {
+    const userId = parseInt(req.params.id);
+
+    if (isNaN(userId)) {
+        return res.status(400).json({ error: "Invalid user ID"});
+    }
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                createdAt: true,
+                Task: {
+                    where: { isCompleted: false },
+                    select: {
+                        id: true,
+                        title: true,
+                        priority: true,
+                        createdAt: true,
+                    },
+                    orderBy: { createdAt: "desc" },
+                    take: 5,
+                },
+            },
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json(user);
+    } catch (err) {
+        return next(err);
+    }
+};
+
 // Logon
 
 const logon = async (req, res, next) => {
@@ -107,8 +148,11 @@ const logoff = (req, res) => {
     return res.sendStatus(200);
 };
 
+
+
 module.exports = {
     register,
     logon,
-    logoff
+    logoff,
+    show,
 };
