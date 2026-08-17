@@ -48,7 +48,7 @@ const getOrderBy = (query) => {
 const index = async (req, res, next) => {
 try {
 
-    const  { find, isCompleted, min_date, max_date, sortBy, sortDirection } = req.query;
+    const  { find, isCompleted, min_date, max_date} = req.query;
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
