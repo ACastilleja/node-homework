@@ -32,6 +32,53 @@ const create = async (req, res, next) => {
     }
 };
 
+//Bulk create task
+const bulkCreate = async (req, res, next) => {
+    const { tasks } = req.body || {};
+
+    if (!tasks || !Array.isArray(tasks) || tasks.length === 0) {
+        return res.status(400).json({
+            error: "Invalid request data. Expected an array of tasks.",
+        });
+    }
+    const validTasks = [];
+    for (const task of tasks) {
+        const { error, value } = taskSchema.validate(task, { abortEarly: false });
+        if (error) {
+            return res.status(400).json({
+                error: "Validation failed",
+                details: error.details,
+            });
+        } 
+
+        const isCompleted = value.isCompleted ?? value.is_completed ?? false;
+
+        validTasks.push({
+            title: value.title,
+            isCompleted: isCompleted,
+            priority: value.priority || "medium",
+            userId: global.user_id,
+        });
+    }
+
+    try {
+        const result = await prisma.task.createMany({
+            data: validTasks,
+            skipDuplicates: false,
+        });
+
+        return res.status(210).json({
+            message: "Bulk task creation successful",
+            tasksCreated: result.count,
+            totalRequested: validTasks.length,
+        });
+    } catch (err) {
+        return next(err);
+    }
+};
+
+
+
 //orderBy helper function
 const getOrderBy = (query) => {
     const validSortFields = ["title", "priority", "createdAt", "id", "isCompleted"];
@@ -227,4 +274,5 @@ module.exports = {
     show,
     update,
     deleteTask,
+    bulkCreate,
 };
