@@ -137,7 +137,7 @@ const searchTasks = async (req, res, next) => {
         const searchResults = await prisma.$queryRaw`
         SELECT t.id, t.title, t.is_completed as "isCompleted", t.priority, t.created_at as "createdAt", t.user_id as "userId", u.name as "user_name" FROM tasks t JOIN users u ON t.user_id 
         WHERE t.title ILIKE ${searchPattern} OR u.name ILIKE ${searchPattern} ORDER BY CASE WHEN t.title ILIKE ${exactMatch} THEN 1 WHEN t.title ILIKE ${startsWith} THEN 2 WHEN t.title ILIKE ${searchPattern} THEN 3 
-        Else 4 END, t.create_at DESC LIMIT ${limit}`;
+        Else 4 END, t.create_at DESC LIMIT ${parseInt(limit)}`;
 
         return res.status(200).json({
             results: searchResults,
