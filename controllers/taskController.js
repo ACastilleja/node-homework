@@ -67,7 +67,7 @@ const bulkCreate = async (req, res, next) => {
             skipDuplicates: false,
         });
 
-        return res.status(210).json({
+        return res.status(201).json({
             message: "Bulk task creation successful",
             tasksCreated: result.count,
             totalRequested: validTasks.length,
@@ -99,6 +99,11 @@ try {
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+
+    if (page < 1 || limit < 1. || limit > 100) {
+        return res.status(400).json({ error: "Invalid pagination parameters"});
+    }
+    
     const skip = (page - 1) * limit;
 
     const whereClause = {

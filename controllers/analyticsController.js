@@ -67,6 +67,11 @@ const getUsersAnalytics = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
+
+        if (page < 1 || limit < 1 || limit > 100) {
+            return res.status(400).json({ error: "Invalid pagination parameters" })
+        }
+        
         const skip = (page - 1) * limit;
 
         
@@ -135,9 +140,9 @@ const searchTasks = async (req, res, next) => {
         const startsWith = `${searchQuery}%`;
 
         const searchResults = await prisma.$queryRaw`
-        SELECT t.id, t.title, t.is_completed as "isCompleted", t.priority, t.created_at as "createdAt", t.user_id as "userId", u.name as "user_name" FROM tasks t JOIN users u ON t.user_id 
+        SELECT t.id, t.title, t.is_completed as "isCompleted", t.priority, t.created_at as "createdAt", t.user_id as "userId", u.name as "user_name" FROM tasks t JOIN users u ON t.user_id = u.id 
         WHERE t.title ILIKE ${searchPattern} OR u.name ILIKE ${searchPattern} ORDER BY CASE WHEN t.title ILIKE ${exactMatch} THEN 1 WHEN t.title ILIKE ${startsWith} THEN 2 WHEN t.title ILIKE ${searchPattern} THEN 3 
-        Else 4 END, t.create_at DESC LIMIT ${parseInt(limit)}`;
+        Else 4 END, t.created_at DESC LIMIT ${parseInt(limit)}`;
 
         return res.status(200).json({
             results: searchResults,

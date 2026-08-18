@@ -37,7 +37,7 @@ const register = async (req, res, next) => {
                 data: {
                     name: value.name,
                     email: value.email,
-                    hashedPassword: hashPassword,
+                    hashedPassword: hashedPassword,
                 },
                 select: {
                     id: true,
@@ -48,7 +48,7 @@ const register = async (req, res, next) => {
             });
 
             const welcomeTaskData = [
-                { title: "Complete your profiel", userId: newUser.id, priority: "medium" },
+                { title: "Complete your profile", userId: newUser.id, priority: "medium" },
                 { title: "Add your first task", userId: newUser.id, priority: "high" },
                 { title: "Explore the app", userId: newUser.id, priority: "low" },
             ];
@@ -79,7 +79,7 @@ const register = async (req, res, next) => {
             transactionStatus: "success",
         });
     }catch (err) {
-        if (err.code === "p2002") {
+        if (err.code === "P2002") {
             return res.status(400).json({ error: "Email already registered" });
         }
         return next(err);
@@ -94,27 +94,51 @@ const show = async (req, res, next) => {
     if (isNaN(userId)) {
         return res.status(400).json({ error: "Invalid user ID"});
     }
+    
+    const allowedFields = ["id", "name", "email", "createdAt"];
+
+    let selectClause = {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        Task: {
+            where: { isCompleted: false },
+            select: {
+                id: true,
+                title: true,
+                priority: true,
+                createdAt: true,
+            },
+            orderBy: { createdAt: "desc" },
+            take: 5,
+        },
+    };
+    
+    //Fields Query Parameter Support
+    if (req.query.fields) {
+        const requestedFields =  req.query.fields.split(",");
+        const customSelect = {};
+
+        customSelect.id = true;
+
+        requestedFields.forEach((field) => {
+            const trimmed = field.trim();
+            if (allowedFields.includes(trimmed)) {
+                customSelect[trimmed] = true;
+            }
+        });
+
+        if (Object.keys(customSelect).length > 0) {
+            selectClause = customSelect;
+        }
+    }
 
     try {
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                createdAt: true,
-                Task: {
-                    where: { isCompleted: false },
-                    select: {
-                        id: true,
-                        title: true,
-                        priority: true,
-                        createdAt: true,
-                    },
-                    orderBy: { createdAt: "desc" },
-                    take: 5,
-                },
-            },
+            select: selectClause,
+            
         });
 
         if (!user) {
