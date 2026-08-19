@@ -103,7 +103,7 @@ try {
     if (page < 1 || limit < 1. || limit > 100) {
         return res.status(400).json({ error: "Invalid pagination parameters"});
     }
-    
+
     const skip = (page - 1) * limit;
 
     const whereClause = {
@@ -191,6 +191,13 @@ const show = async (req, res, next) => {
                 id: true,
                 title: true,
                 isCompleted: true,
+                priority: true,
+                User: {
+                    select: {
+                        name: true,
+                        email: true,
+                    },
+                },
             },
         });
         if (!task) {
@@ -232,6 +239,7 @@ const update = async (req, res, next) => {
                 id: true,
                 title: true,
                 isCompleted: true,
+                priority: true,
             },
         });
 

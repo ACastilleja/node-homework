@@ -63,7 +63,7 @@ const getUserAnalytics = async (req, res, next) => {
     }
 };
 
-const getUsersAnalytics = async (req, res, next) => {
+const getUsersWithStats = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
@@ -71,7 +71,7 @@ const getUsersAnalytics = async (req, res, next) => {
         if (page < 1 || limit < 1 || limit > 100) {
             return res.status(400).json({ error: "Invalid pagination parameters" })
         }
-        
+
         const skip = (page - 1) * limit;
 
         
@@ -156,6 +156,6 @@ const searchTasks = async (req, res, next) => {
 
 module.exports = {
     getUserAnalytics,
-    getUsersAnalytics,
+    getUsersWithStats,
     searchTasks,
 };
