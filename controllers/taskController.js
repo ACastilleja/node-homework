@@ -192,6 +192,7 @@ const show = async (req, res, next) => {
                 title: true,
                 isCompleted: true,
                 priority: true,
+                createdAt: true,
                 User: {
                     select: {
                         name: true,
