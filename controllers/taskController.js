@@ -17,7 +17,7 @@ const create = async (req, res, next) => {
                 title: value.title,
                 isCompleted: isCompleted,
                 priority: value.priority,
-                userId: global.user_id,
+                userId: req.user.id,
             },
             select: {
                 id: true,
@@ -57,7 +57,7 @@ const bulkCreate = async (req, res, next) => {
             title: value.title,
             isCompleted: isCompleted,
             priority: value.priority || "medium",
-            userId: global.user_id,
+            userId: req.user.id,
         });
     }
 
@@ -107,7 +107,7 @@ try {
     const skip = (page - 1) * limit;
 
     const whereClause = {
-        userId: global.user_id,
+        userId: req.user.id,
     };
 
     if (find) {
@@ -184,7 +184,7 @@ const show = async (req, res, next) => {
             where: {
                 id_userId: {
                     id: taskId,
-                    userId: global.user_id,
+                    userId: req.user.id,
                 },
             },
             select: {
@@ -232,7 +232,7 @@ const update = async (req, res, next) => {
             where: {
                 id_userId: {
                     id: taskId,
-                    userId: global.user_id,
+                    userId: req.user.id,
                 },
             },
             data: value,
@@ -264,7 +264,7 @@ const deleteTask = async (req, res, next) => {
             where: {
                 id_userId: {
                     id: taskId,
-                    userId: global.user_id,
+                    userId: req.user.id,
                 },
             },
             select: {
