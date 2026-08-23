@@ -1,6 +1,7 @@
 const express = require("express");
 
 const userRoutes = require("./routes/userRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
 const notFound = require("./middleware/not-found");
 const errorHandler = require("./middleware/error-handler");
 const authMiddleware = require("./middleware/auth");
@@ -27,6 +28,8 @@ app.get("/health", async (req, res) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/tasks", authMiddleware, taskRouter);
+app.use("/api/analytics", authMiddleware, analyticsRoutes);
+
 app.use(notFound);
 app.use(errorHandler);
 
