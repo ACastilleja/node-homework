@@ -100,7 +100,7 @@ try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    if (page < 1 || limit < 1. || limit > 100) {
+    if (page < 1 || limit < 1 || limit > 100) {
         return res.status(400).json({ error: "Invalid pagination parameters"});
     }
 
