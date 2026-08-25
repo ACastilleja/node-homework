@@ -18,10 +18,11 @@ module.exports = async (req, res, next) => {
         }
         req.user = { id: decoded.id };
         if (["POST", "PATCH", "PUT", "DELETE", "CONNECT"].includes(req.method)) {
-            if (req.get("X-CSRF-TOKEN") !== decoded.csrfToken) {
+            const csrfHeader = req.get("X-CSRF-TOKEN");
+            if (!csrfHeader || csrfHeader !== decoded.csrfToken) {
                 return send401(res);
             }
         }
         next();
     });
-}
+};
