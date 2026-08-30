@@ -1,6 +1,7 @@
 const { defineConfig } = require("eslint/config");
 const js = require("@eslint/js");
 const globals = require("globals");
+const pluginJest = require("eslint-plugin-jest");
 
 module.exports = defineConfig([
   { files: ["**/*.{js,mjs,cjs}"], plugins: { js }, extends: ["js/recommended"] },
