@@ -28,6 +28,6 @@ model Task {
   createdAt   DateTime @default(now()) @db.Timestamp(6) @map("created_at")
   User        User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction) 
 
-  @@unique([id, userId])
+  @@unique([id, userId], name: "id_userId")
   @@map("tasks")
 }
