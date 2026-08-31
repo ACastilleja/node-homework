@@ -60,7 +60,7 @@ describe("testing task creation", () => {
         }
     });
 
-    it("16. If you have a valid user id, create() succeeds(res.statusCode should be 201).", async () => {
+    it("16. If you have a valid user id, create() succeeds (res.statusCode should be 201).", async () => {
         const req = httpMocks.createRequest({
             method: "POST",
             user: { id: user1.id },
@@ -76,7 +76,7 @@ describe("testing task creation", () => {
         expect(saveData.title).toBe("first task");
     });
 
-    it("The object has the right value for isCompleted.", async () => {
+    it("18. The object has the right value for isCompleted.", async () => {
         expect(saveData.isCompleted).toBe(false);
     });
 
@@ -116,7 +116,7 @@ describe("test getting created tasks", () => {
     });
 
     it ("23. The title in the first array object is as expected.", async () => {
-        expect(saveData.task[0].title).toBe("first task");
+        expect(saveData.tasks[0].title).toBe("first task");
     });
 
     it ("24. The first array object does not contain a userId.", async () => {
@@ -188,7 +188,7 @@ describe("testing update and delete of tasks", () => {
             params: { id: saveTaskId.toString() },
         });
         saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
-        await waitForRouteHandlerCompletion(update, req, saveRes);
+        await waitForRouteHandlerCompletion(deleteTask, req, saveRes);
         expect(saveRes.statusCode).toBe(404);
     });
 
@@ -199,7 +199,7 @@ describe("testing update and delete of tasks", () => {
             params: { id: saveTaskId.toString() },
         });
         saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
-        await waitForRouteHandlerCompletion(update, req, saveRes);
+        await waitForRouteHandlerCompletion(deleteTask, req, saveRes);
         expect(saveRes.statusCode).toBe(200);
     });
 
