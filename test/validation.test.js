@@ -94,7 +94,7 @@ describe("taskSchema object validation tests", () => {
         ).toBeDefined();
     });
 
-    it("10. If an isCompleted is not specified but the rest of teh object is valid, a default fo false is privided by validation.", () => {
+    it("10. If an isCompleted is not specified but the rest of the object is valid, a default of false is privided by validation.", () => {
         const { value } = taskSchema.validate(
             { title: "Buy groceries"},
             { abortEarly: false },
