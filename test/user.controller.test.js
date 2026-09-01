@@ -105,7 +105,7 @@ describe("testing logon, register, and logoff", () => {
     it("41. A logon attempt with a bad password returns a 401.", async () => {
         const req = httpMocks.createRequest({
             method: "POST",
-            body: { email: "bob@sample.con", password: "WrongPassword123!" },
+            body: { email: "bob@sample.com", password: "WrongPassword123!" },
         });
         saveRes = MockResponseWithCookies();
         await waitForRouteHandlerCompletion(logon, req, saveRes);
