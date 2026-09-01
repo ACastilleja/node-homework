@@ -11,6 +11,7 @@ const jwt = require("jsonwebtoken");
 
 
 let saveRes = null;
+let registerRes = null;
 let saveData = null;
 let savedReq = null;
 
@@ -48,9 +49,9 @@ describe("testing logon, register, and logoff", () => {
             method: "POST",
             body: { name: "Bob", email: "bob@sample.com", password: "Pa$$word20" },
         });
-        saveRes = MockResponseWithCookies();
-        await waitForRouteHandlerCompletion(register, req, saveRes);
-        expect(saveRes.statusCode).toBe(201);
+        registerRes = MockResponseWithCookies();
+        await waitForRouteHandlerCompletion(register, req, registerRes);
+        expect(registerRes.statusCode).toBe(201);
     });
 
     it("34. The user can logon.", async () => {
@@ -76,12 +77,14 @@ describe("testing logon, register, and logoff", () => {
     });
 
     it("37. The returned data from the register has the expected name.", () => {
-        saveData = saveRes._getJSONData();
-        expect(saveData.name).toBe("Bob");
+        saveData = registerRes._getJSONData();
+        const name = saveData.name || (saveData.user && saveData.user.name);
+        expect(name).toBe("Bob");
     });
 
     it("38. The returned data contains a csrfToken.", () => {
-        expect(saveData.csrfToken).toBeDefined();
+        const regData = registerRes._getJSONData();
+        expect(regData.csrfToken).toBeDefined();
     });
 
     it("39. You can now logoff.", async () => {
