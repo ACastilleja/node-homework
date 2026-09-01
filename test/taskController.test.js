@@ -20,14 +20,14 @@ let saveData= null;
 let saveTaskId = null;
 
 beforeAll(async () => {
-    await prisma.Task.deleteMany();
-    await prisma.User.deleteMany();
+    await prisma.task.deleteMany();
+    await prisma.user.deleteMany();
     user1 = await prisma.User.create({data: { name: "Bob", email: "bob@sample.com", hashedPassword: "nonsense"}});
     user2 = await prisma.User.create({data: { name: "Alice", email: "alice@sample.com", hashedPassword: "nonsense"}});
 });
 
-afterAll(() => {
-    prisma.$disconnect();
+afterAll(async () => {
+    await prisma.$disconnect();
 });
 
 describe("testing task creation", () => {
@@ -36,7 +36,7 @@ describe("testing task creation", () => {
             method: "POST",
             body: { title: "first task"},
         });
-        saveRes = httpMocks.createResponse({eventEmitter: EventEmitter});
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         expect.assertions(1);
         try {
         await waitForRouteHandlerCompletion(create, req, saveRes);
@@ -51,7 +51,7 @@ describe("testing task creation", () => {
             user: { id: 9999999 },
             body: { title: "bogus task" },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         expect.assertions(1);
         try{
             await waitForRouteHandlerCompletion(create, req, saveRes);
@@ -66,7 +66,7 @@ describe("testing task creation", () => {
             user: { id: user1.id },
             body: { title: "first task" },
         });
-        saveRes= httpMocks.createResponse({ eventEmitter: EventEmitter });
+        saveRes= httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         await waitForRouteHandlerCompletion(create, req, saveRes);
         expect(saveRes.statusCode).toBe(201);
     });
@@ -77,10 +77,12 @@ describe("testing task creation", () => {
     });
 
     it("18. The object has the right value for isCompleted.", async () => {
+        saveData = saveRes._getJSONData();
         expect(saveData.isCompleted).toBe(false);
     });
 
     it("19. The object does not have any value for userId.", async () => {
+        saveData = saveRes._getJSONData();
         saveTaskId = saveData.id;
         expect(saveData.userId).toBeUndefined();
     });
@@ -91,7 +93,7 @@ describe("test getting created tasks", () => {
         const req = httpMocks.createRequest({
             method: "GET",
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         expect.assertions(1);
         try{
             await waitForRouteHandlerCompletion(index, req, saveRes);
@@ -105,21 +107,24 @@ describe("test getting created tasks", () => {
             method: "GET",
             user: { id: user1.id },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         await waitForRouteHandlerCompletion(index, req, saveRes);
         expect(saveRes.statusCode).toBe(200);
     });
 
     it("22. The returned object has a tasks array of length 1.", async () => {
         saveData = saveRes._getJSONData();
+        expect(Array.isArray(saveData.tasks)).toBe(true);
         expect(saveData.tasks.length).toBe(1);
     });
 
     it ("23. The title in the first array object is as expected.", async () => {
+        saveData = saveRes._getJSONData();
         expect(saveData.tasks[0].title).toBe("first task");
     });
 
     it ("24. The first array object does not contain a userId.", async () => {
+        saveData = saveRes._getJSONData();
         expect(saveData.tasks[0].userId).toBeUndefined();
     });
 
@@ -128,7 +133,7 @@ describe("test getting created tasks", () => {
             method: "GET",
             user: { id: user2.id },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter});
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         await waitForRouteHandlerCompletion(index, req, saveRes);
         expect(saveRes.statusCode).toBe(404);
     });
@@ -139,7 +144,7 @@ describe("test getting created tasks", () => {
             user: { id: user1.id },
             params: { id: saveTaskId.toString() },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter});
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
             await waitForRouteHandlerCompletion(show, req, saveRes);
             expect(saveRes.statusCode).toBe(200);
     });
@@ -150,7 +155,7 @@ describe("test getting created tasks", () => {
             user: { id: user2.id },
             params: { id: saveTaskId.toString() },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter});
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
             await waitForRouteHandlerCompletion(show, req, saveRes);
             expect(saveRes.statusCode).toBe(404);
     });
@@ -164,7 +169,7 @@ describe("testing update and delete of tasks", () => {
             params: { id: saveTaskId.toString() },
             body: { isCompleted: true },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         await waitForRouteHandlerCompletion(update, req, saveRes);
         expect(saveRes.statusCode).toBe(200);
     });
@@ -176,7 +181,7 @@ describe("testing update and delete of tasks", () => {
             params: { id: saveTaskId.toString() },
             body: { isCompleted: true },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         await waitForRouteHandlerCompletion(update, req, saveRes);
         expect(saveRes.statusCode).toBe(404);
     });
@@ -187,7 +192,7 @@ describe("testing update and delete of tasks", () => {
             user: { id: user2.id },
             params: { id: saveTaskId.toString() },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         await waitForRouteHandlerCompletion(deleteTask, req, saveRes);
         expect(saveRes.statusCode).toBe(404);
     });
@@ -198,7 +203,7 @@ describe("testing update and delete of tasks", () => {
             user: { id: user1.id },
             params: { id: saveTaskId.toString() },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         await waitForRouteHandlerCompletion(deleteTask, req, saveRes);
         expect(saveRes.statusCode).toBe(200);
     });
@@ -209,7 +214,7 @@ describe("testing update and delete of tasks", () => {
             user: { id: user1.id },
             params: { id: saveTaskId.toString() },
         });
-        saveRes = httpMocks.createResponse({ eventEmitter: EventEmitter });
+        saveRes = httpMocks.createResponse({ eventEmitter: require("events").EventEmitter });
         await waitForRouteHandlerCompletion(show, req, saveRes);
         expect(saveRes.statusCode).toBe(404);
     });
