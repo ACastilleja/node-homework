@@ -10,7 +10,7 @@ const create = async (req, res, next) => {
     }
 
     try {
-        const isCompleted = value.isCompleted ?? value.is_completed ?? false;
+        const isCompleted = value.isCompleted;
 
         const task = await prisma.task.create({
             data: {
@@ -51,7 +51,7 @@ const bulkCreate = async (req, res, next) => {
             });
         } 
 
-        const isCompleted = value.isCompleted ?? value.is_completed ?? false;
+        const isCompleted = value.isCompleted;
 
         validTasks.push({
             title: value.title,
