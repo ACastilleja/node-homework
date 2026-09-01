@@ -1,5 +1,7 @@
 require("dotenv").config();
 process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
+
+const { EventEmitter } = require("events");
 const waitForRouteHandlerCompletion = require("./waitForRouteHandlerCompletion");
 const prisma = require("../db/prisma");
 const httpMocks = require("node-mocks-http");
@@ -66,9 +68,9 @@ describe("testing logon, register, and logoff", () => {
         expect(jwtCookie).toBeDefined();
     });
 
-    it("36. That string contains \"HTTPOnly;\".", () => {
+    it("36. That string contains \"HttpOnly;\".", () => {
         const setCookieArray = saveRes.get("Set-Cookie");
-        jwtCookie = setCookieArray.find((str) => str.startWith("jwt="));
+        jwtCookie = setCookieArray.find((str) => str.startsWith("jwt="));
         expect(jwtCookie).toContain("HttpOnly;");
     });
 
@@ -179,10 +181,10 @@ describe("Testing JWT middleware", () => {
         savedReq.headers["x-csrf-token"] = "goodtoken";
 
         const next = await waitForRouteHandlerCompletion(jwtMiddleware, savedReq, saveRes);
-        expect(next)toHaveBeenCalled();
+        expect(next).toHaveBeenCalled();
     });
 
-    it("65. If both the toke and the jwt are good, req.user.id has the appropriate value.", () => {
+    it("65. If both the token and the jwt are good, req.user.id has the appropriate value.", () => {
         expect(savedReq.user.id).toBe(5);
     });
 });
