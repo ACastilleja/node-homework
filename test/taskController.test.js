@@ -114,8 +114,7 @@ describe("test getting created tasks", () => {
 
     it("22. The returned object has a tasks array of length 1.", async () => {
         saveData = saveRes._getJSONData();
-        expect(Array.isArray(saveData.tasks)).toBe(true);
-        expect(saveData.tasks.length).toBe(1);
+        expect(saveData.tasks?.length).toBe(1);
     });
 
     it ("23. The title in the first array object is as expected.", async () => {

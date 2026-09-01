@@ -121,7 +121,7 @@ describe("patchTaskSchema object validation tests", () => {
     });
     it("13. If no value is provided for isCompleted this remains undefined in the returned value.", () => {
         const{ value } = patchTaskSchema.validate(
-            { title: "Updated Title" },
+            {},
             { abortEarly: false },
         );
         expect(value.isCompleted).toBeUndefined();
