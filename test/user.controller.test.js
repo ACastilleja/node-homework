@@ -12,6 +12,7 @@ const jwt = require("jsonwebtoken");
 
 let saveRes = null;
 let saveData = null;
+let savedReq = null;
 
 const cookie = require("cookie");
 function MockResponseWithCookies() {
