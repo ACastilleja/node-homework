@@ -53,7 +53,7 @@ describe("register a user and test authentication workflow", () => {
         const res = await agent
         .get("/api/tasks")
         .set("X-CSRF-TOKEN", csrfToken || "");
-        expect(res.status).not.toBe(401);
+        expect([200, 404]).toContain(res.status);
     });
 
     it("51. Verify that you can log out.", async () => {
@@ -61,6 +61,11 @@ describe("register a user and test authentication workflow", () => {
         .post("/api/users/logoff")
         .set("X-CSRF-TOKEN", csrfToken || "");
         expect(saveRes.status).toBe(200);
+
+        const cookies = saveRes.headers["set-cookie"] || [];
+        const jwtCookie = cookies.find((c) => c.startsWith("jwt="));
+        expect(jwtCookie).toBeDefined();
+        expect(jwtCookie).toMatch(/1970|Expires=Thu, 01 Jan 1970/i);
     });
 
     it("52. Make sure that you are really logged out: /api/tasks should now return a 401", async () => {
