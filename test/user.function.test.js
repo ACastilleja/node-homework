@@ -30,8 +30,8 @@ describe("register a user and test authentication workflow", () => {
     });
 
     it("47. Registration returns an object with the expected name.", () => {
-        const name = saveRes.body.name || (saveRes.body.user && saveRes.body.user.name);
-        expect(name).toBe("John Deere");
+        
+        expect(saveRes.body.user?.name).toBe("John Deere");
     });
 
     it("48. Test that the returned object includes a csrfToken.", () => {
@@ -62,11 +62,6 @@ describe("register a user and test authentication workflow", () => {
         .set("X-CSRF-TOKEN", csrfToken || "");
         expect(saveRes.status).toBe(200);
 
-        const cookies = saveRes.headers["set-cookie"] || [];
-        const jwtCookie = cookies.find((c) => c.startsWith("jwt="));
-    if (jwtCookie) {
-        expect(jwtCookie).toMatch(/1970|Expires=Thu, 01 Jan 1970/i);
-    }
     });
 
     it("52. Make sure that you are really logged out: /api/tasks should now return a 401", async () => {

@@ -78,8 +78,8 @@ describe("testing logon, register, and logoff", () => {
 
     it("37. The returned data from the register has the expected name.", () => {
         saveData = registerRes._getJSONData();
-        const name = saveData.name || (saveData.user && saveData.user.name);
-        expect(name).toBe("Bob");
+        
+        expect(saveData.user?.name).toBe("Bob");
     });
 
     it("38. The returned data contains a csrfToken.", () => {
@@ -88,8 +88,15 @@ describe("testing logon, register, and logoff", () => {
     });
 
     it("39. You can now logoff.", async () => {
+        const logonData = saveRes._getJSONData();
         const req = httpMocks.createRequest({
             method: "POST",
+            headers: {
+                "x-csrf-token": logonData.csrfToken,
+            },
+            cookies: {
+                jwt: jwtCookie,
+            },
         });
         saveRes = MockResponseWithCookies();
         await waitForRouteHandlerCompletion(logoff, req, saveRes);
