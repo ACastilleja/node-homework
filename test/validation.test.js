@@ -7,9 +7,7 @@ describe("user object validation tests", () => {
             { name: "Bob", email: "bob@sample.com", password: "password" },
             { abortEarly: false },
         );
-        expect(
-            error.details.find((detail) => detail.context.key == "password"),
-        ).toBeDefined();
+        expect(error?.details?.some((d) => d.context.key === "password")).toBe(true);
     });
 
     it("2. The user schema requires that an email be specified.", () => {
@@ -17,9 +15,7 @@ describe("user object validation tests", () => {
             { name: "Bob", password: "StrongPass123!"},
             { abortEarly: false },
         );
-        expect(
-            error.details.find((detail) => detail.context.key == "email"),
-        ).toBeDefined();
+        expect(error?.details?.some((d) => d.context.key === "email")).toBe(true);
     });
 
     it("3. The user schema does not accept an invalid email.", () => {
@@ -27,9 +23,7 @@ describe("user object validation tests", () => {
             { name: "Bob", email: "not-an-email", password: "StrongPass123!"},
             { abortEarly: false },
         );
-        expect(
-            error.details.find((detail) => detail.context.key == "email"),
-        ).toBeDefined();
+        expect(error?.details?.some((d) => d.context.key === "email")).toBe(true);
     });
 
     it("4. The user schema requires a password.", () => {
@@ -37,9 +31,7 @@ describe("user object validation tests", () => {
             { name: "Bob", email: "bob@sample.com"},
             { abortEarly: false },
         );
-        expect(
-            error.details.find((detail) => detail.context.key == "password"),
-        ).toBeDefined();
+        expect(error?.details?.some((d) => d.context.key === "password")).toBe(true);
     });
 
     it("5. The user schema requires name.", () => {
@@ -47,9 +39,7 @@ describe("user object validation tests", () => {
             { email: "bob@sample.com", password: "StrongPass123!"},
             { abortEarly: false },
         );
-        expect(
-            error.details.find((detail) => detail.context.key == "name"),
-        ).toBeDefined();
+        expect(error?.details?.some((d) => d.context.key === "name")).toBe(true);
     });
 
     it("6. The name must be valid (3 to 30 characters).", () => {
@@ -57,9 +47,7 @@ describe("user object validation tests", () => {
             { name: "Me", email: "bob@sample.com", password: "StrongPass123!"},
             { abortEarly: false },
         );
-        expect(
-            error.details.find((detail) => detail.context.key == "name"),
-        ).toBeDefined();
+        expect(error?.details?.some((d) => d.context.key === "name")).toBe(true);
     });
 
     it("7. If validation is performed on a valid user object, error comes back falsy.", () => {

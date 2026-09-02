@@ -53,7 +53,7 @@ describe("register a user and test authentication workflow", () => {
         const res = await agent
         .get("/api/tasks")
         .set("X-CSRF-TOKEN", csrfToken || "");
-        expect(res.status).not.toBe(401);
+        expect(res.status).toBe(200);
     });
 
     it("51. Verify that you can log out.", async () => {

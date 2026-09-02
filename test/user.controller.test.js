@@ -104,9 +104,9 @@ describe("testing logon, register, and logoff", () => {
     });
 
     it("40. The logoff clears the cookie.", () => {
-        const setCookieArray = saveRes.get("Set-Cookie") || [];
+        const setCookieArray = saveRes.getHeader("Set-Cookie") || saveRes.get("Set-Cookie") || [];
         const clearedCookie = setCookieArray.find((str) => str.startsWith("jwt="));
-        expect(clearedCookie).toMatch(/1970|Expires=Thu, 01 Jan 1970/i);
+        expect(clearedCookie).toContain("Jan 1970");
     });
 
     it("41. A logon attempt with a bad password returns a 401.", async () => {
