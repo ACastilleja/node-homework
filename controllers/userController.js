@@ -96,7 +96,7 @@ const register = async (req, res, next) => {
         user: {
             name: result.user.name,
             email: result.user.email,
-            },
+        },
             csrfToken,
         });
 
@@ -203,9 +203,9 @@ const logon = async (req, res, next) => {
         const csrfToken = setJwtCookie(req, res, user);
 
     return res.status(200).json({
-        
+    
         name: user.name,
-        email: user.email,     
+        email: user.email,   
         csrfToken,
     });
 
