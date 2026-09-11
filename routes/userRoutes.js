@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const jwtMiddleware = require("../middleware/jwtMiddleware");
 
-const {register, logon, logoff, googleLogon }= require("../controllers/userController");
-
+const {register, logon, logoff }= require("../controllers/userController");
+const {googleLogon} = require("../controllers/googleAuthController");
 
 router.post("/register", register);
 router.post("/logon", logon);

@@ -10,7 +10,7 @@ const client = new OAuth2Client(
 
 const googleLogon = async (req, res) => {
     try{
-        const { authorizationCode } = req.body;
+        const authorizationCode = req.body.code || req.body.authorizationCode;
 
         if(!authorizationCode) {
             return res.status(400).json({ error: "Authorization code is required" });
@@ -52,10 +52,10 @@ const googleLogon = async (req, res) => {
             { expiresIn: "24h" }
         );
 
-        res.cookie("jwt" token, {
+        res.cookie("jwt", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
         });
 
         return res.status(200).json({
