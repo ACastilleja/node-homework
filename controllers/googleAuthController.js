@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
 const prisma = require("../db/prisma");
@@ -21,7 +22,7 @@ const googleLogon = async (req, res) => {
 
         const ticket = await client.verifyIdToken({
             idToken: tokens.id_token,
-            audience: process.env.GOOOGlE_CLIENT_ID,
+            audience: process.env.GOOGLE_CLIENT_ID,
         });
 
         const payload = ticket.getPayload();
@@ -54,8 +55,8 @@ const googleLogon = async (req, res) => {
 
         res.cookie("jwt", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         });
 
         return res.status(200).json({
