@@ -42,6 +42,7 @@ const googleLogon = async (req, res) => {
             });
         }
 
+
         const csrfToken = crypto.randomBytes(16).toString("hex");
 
         const token = jwt.sign(
@@ -62,6 +63,7 @@ const googleLogon = async (req, res) => {
         return res.status(200).json({
             name: user.name,
             csrfToken: csrfToken,
+            
         });
     } catch (error) {
         console.error("Google OAuth Error:", error);
