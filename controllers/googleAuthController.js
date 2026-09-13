@@ -54,10 +54,12 @@ const googleLogon = async (req, res) => {
             { expiresIn: "24h" }
         );
 
+        const isProduction = process.env.NODE_ENV === "production" || req.secure || req.headers["x-forward-proto"] === "https";
+
         res.cookie("jwt", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
         });
 
         return res.status(200).json({

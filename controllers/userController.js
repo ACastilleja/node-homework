@@ -24,11 +24,14 @@ async function comparePassword(inputPassword, storedHash){
 }
 
 //JWT and Cookie
-const cookieFlags = () => {
+const cookieFlags = (req) => {
+    const isProduction = 
+        process.env.NODE_ENV === "production" || req?.secure || req?.headers["x-forwarded-proto"] === "https";
+
     return {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
     };
 };
 
