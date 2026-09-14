@@ -1,1 +1,3 @@
 https://node-homework-arturo-ce.onrender.com
+
+Added Google logon capability inside controller/googleAuthController.js and its pertinent tdd test in test/googleAuthController.test.js.  
