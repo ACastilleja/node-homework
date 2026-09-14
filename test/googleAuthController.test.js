@@ -2,7 +2,7 @@ const request = require("supertest");
 const { app,  server } = require("../app");
 const prisma = require("../db/prisma");
 const { OAuth2Client } = require("google-auth-library");
-const expectCookies = require("supertest/lib/cookies");
+
 
 jest.mock("google-auth-library");
 
