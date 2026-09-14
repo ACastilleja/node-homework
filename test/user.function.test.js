@@ -8,8 +8,8 @@ let csrfToken;
 const { app, server } = require("../app");
 
 beforeAll(async () => {  
-await prisma.task.deleteMany(); 
-await prisma.user.deleteMany(); 
+await prisma.Task.deleteMany(); 
+await prisma.User.deleteMany(); 
 agent = request.agent(app);
 });
 

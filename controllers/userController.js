@@ -24,18 +24,21 @@ async function comparePassword(inputPassword, storedHash){
 }
 
 //JWT and Cookie
-const cookieFlags = () => {
+const cookieFlags = (req) => {
+    const isProduction = 
+        process.env.NODE_ENV === "production" || req?.secure || req?.headers["x-forwarded-proto"] === "https";
+
     return {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
     };
 };
 
 const setJwtCookie = (req, res, user) => {
     const payload = { id: user.id, csrfToken: randomUUID() };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.cookie("jwt", token, { ...cookieFlags(req), maxAge: 3600000 });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" });
+    res.cookie("jwt", token, { ...cookieFlags(req), maxAge: 86400000 });
     return payload.csrfToken;
 };
 
@@ -64,7 +67,7 @@ const register = async (req, res, next) => {
         if (data.success) isPerson = true;
         delete req.body.recaptchaToken;
     } else if (
-        process.env.RECAPTCHA_BYPASS && req.get("X-Recaptcha-Test") === process.env.RECAPTCHA_BYPASS
+        process.env.NODE_ENV === "test" || (process.env.RECAPTCHA_BYPASS && req.get("X-Recaptcha-Test") === process.env.RECAPTCHA_BYPASS)
     ) {
         isPerson = true;
     }

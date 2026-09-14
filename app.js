@@ -17,14 +17,18 @@ const app = express();
 
 app.set("trust proxy",1);
 
-app.use(cors({
+app.use(
+    cors({
     origin: [
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
         "http://localhost:5173",
         "http://localhost:3000",
         "https://node-homework-arturo-ce.onrender.com",
     ],
     credentials: true,
-}));
+    })
+);
 
 if(process.env.NODE_ENV !== "test") {
 app.use(
@@ -35,7 +39,13 @@ app.use(
 );
 }
 
-app.use(helmet());
+app.use(
+    helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: { policy: "unsafe-none" },
+    crossOriginEmbedderPolicy: false,
+})
+);
 
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
@@ -52,6 +62,7 @@ app.get("/health", async (req, res) => {
 });
 
 app.use("/api/users", userRoutes);
+app.use("/users", userRoutes);
 app.use("/api/tasks", jwtMiddleware, taskRouter);
 app.use("/api/analytics", jwtMiddleware, analyticsRoutes);
 
