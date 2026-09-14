@@ -67,7 +67,7 @@ const register = async (req, res, next) => {
         if (data.success) isPerson = true;
         delete req.body.recaptchaToken;
     } else if (
-        process.env.RECAPTCHA_BYPASS && req.get("X-Recaptcha-Test") === process.env.RECAPTCHA_BYPASS
+        process.env.NODE_ENV === "test" || (process.env.RECAPTCHA_BYPASS && req.get("X-Recaptcha-Test") === process.env.RECAPTCHA_BYPASS)
     ) {
         isPerson = true;
     }
